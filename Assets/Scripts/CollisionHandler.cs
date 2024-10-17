@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,16 +20,47 @@ public class CollisionHandler : MonoBehaviour
     ParticleSystem successParticles;
 
     AudioSource audioSource;
+    BoxCollider boxCollider;
     bool isTransitioning = false;
+    bool collisionDisabled = false;
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        boxCollider = GetComponent<BoxCollider>();
+    }
+
+    void Update()
+    {
+        RespondToDebugKeys();
+        // DisableCollision();          MY SOLUTION FOR V.53
+        // CheatLoadNextLevel();        MY SOLUTION FOR V.53
+    }
+
+    void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionDisabled = !collisionDisabled; //toggle value to true/false
+            switch (collisionDisabled)
+            {
+                case true:
+                    Debug.Log("Collision disabled");
+                    break;
+                case false:
+                    Debug.Log("Collision enabled");
+                    break;;
+            }
+        }
     }
 
     void OnCollisionEnter(Collision other)
     {
-        if (isTransitioning)
+        if (isTransitioning || collisionDisabled)
         {
             return;
         }
@@ -87,4 +119,23 @@ public class CollisionHandler : MonoBehaviour
         }
         SceneManager.LoadScene(nextSceneIndex);
     }
+
+    // void DisableCollision()      MY SOLUTION FOR V.53
+    // {
+    //     if (Input.GetKeyDown(KeyCode.C))
+    //     {
+    //         collisionDisabled = !collisionDisabled; //toggle collisionDisable to true/false;
+    //         Debug.Log("Key C pressed. Collision Disabled");
+    //         boxCollider.enabled = false;
+    //     }
+    // }
+
+    // void CheatLoadNextLevel()    MY SOLUTION FOR V.53
+    // {
+    //     if (Input.GetKeyDown(KeyCode.L))
+    //     {
+    //         Debug.Log("Key L pressed. Load Next Level");
+    //         Invoke("LoadNextLevel", levelLoadDelay);
+    //     }
+    // }
 }
